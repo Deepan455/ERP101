@@ -14,7 +14,7 @@ function Content() {
     spacing='0'>
       <TopBar/>
       <Grid w='full' h='full' templateRows="repeat(4,1fr)" templateColumns="repeat(5,1fr)" gap={2} p='2'>
-        <GridItem colSpan={5} display='flex' justifyConetnt='center' alignItems='center'><Summary/></GridItem>
+        <GridItem colSpan={5} display='flex' justifyContent='center' alignItems='center'><Summary/></GridItem>
         <GridItem colSpan={2} rowSpan={2} px='4' py='8' bg={plateColor}>
           <LineChart/>
         </GridItem>
