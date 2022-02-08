@@ -8,6 +8,7 @@ import Inventory from "./Inventory";
 import Employee from "./Employee";
 import Order from "./Order";
 import Content from "./common/Content";
+import AMaterial from "./individuals/AMaterial";
 
 function App(){
     return(
@@ -19,8 +20,9 @@ function App(){
                         <Route path="" element={<Content/>}/>
                         <Route path="inventory" element={<Inventory/>}/>
                         <Route path="order" element={<Order/>}/>
-                        <Route path="employee" element={<Employee/>}/>
+                        <Route path="material/*" element={<AMaterial/>}/>
                     </Route>
+                    <Route path="Materialone" element={<AMaterial/>}/>
                 </Routes>
             </ChakraProvider>
         </Router>

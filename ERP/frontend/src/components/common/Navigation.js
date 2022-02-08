@@ -20,11 +20,11 @@ function Navigation() {
                     <Link to='order'>
                         <Container variant='nav-item'><FiList size={30}/><Text variant='nav-text'>Order</Text></Container>
                     </Link>
-                    <Link to='employee'>
+                    <Link to='material/1'>
                         <Container variant='nav-item'><FiUsers size={30}/><Text variant='nav-text'>Employees</Text></Container>
                     </Link>
                     <Link to='order'>
-                        <Container variant='nav-item'><FiCreditCard size={30}/><Text variant='nav-text'>Payment</Text></Container>
+                        <Container variant='nav-item'><FiCreditCard size={30}/><Text variant='nav-text'>Material</Text></Container>
                     </Link>
                     <Container variant='nav-item'><Button onClick={toggleColorMode}>{colorMode === 'light'?<FiSun/>:<FiMoon/>}</Button></Container>
         </VStack>

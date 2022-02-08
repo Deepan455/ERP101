@@ -1,4 +1,5 @@
-import React from "react";
+import React, {useState, useEffect} from "react";
+import axios from "axios";
 import {
     VStack, Box, Heading,Text, Center, Progress, useColorModeValue,
     Flex,
@@ -15,6 +16,25 @@ import TopBar from "./common/TopBar";
 function Order(){
     const bgColor = useColorModeValue("gray.200","whiteAlpha.50");
     const plateColor = useColorModeValue("white","black");
+
+    const [order, setOrder] = useState(null);
+
+    useEffect(()=>{
+            async function getOrders(){
+                const res = await axios.get('http://127.0.0.1:8000/api/order/');
+                if(res.status == 200){
+                    setOrder(res.data);
+                }
+                else{
+                    console.log("Fetch Error");
+                }
+            };
+            getOrders()
+                .catch(e=>{
+                    console.log(e);
+                })
+    },[]);
+
     return (
         <VStack
     w="87%"
@@ -34,48 +54,25 @@ function Order(){
         <Table size='md'>
             <Thead>
                 <Tr>
-                    <Th>Item name</Th>
-                    <Th>Item Date</Th>
-                    <Th>Quantity</Th>
-                    <Th>Price</Th>
-                    <Th>Order</Th>
+                    <Th>ID</Th>
+                    <Th>Item Name</Th>
+                    <Th>Order Name</Th>
                     <Th>Status</Th>
+                    <Th>Order BY</Th>
                 </Tr>
             </Thead>
-            <Tbody>
-                <Tr>
-                    <Td>1</Td>
-                    <Td>Ink</Td>
-                    <Td>Litre</Td>
-                    <Td>Liquid</Td>
-                    <Td>2</Td>
-                    <Td>Price</Td>
-                </Tr>
-                <Tr>
-                    <Td>1</Td>
-                    <Td>Ink</Td>
-                    <Td>Litre</Td>
-                    <Td>Liquid</Td>
-                    <Td>2</Td>
-                    <Td>Price</Td>
-                </Tr>
-                <Tr>
-                    <Td>1</Td>
-                    <Td>Ink</Td>
-                    <Td>Litre</Td>
-                    <Td>Liquid</Td>
-                    <Td>2</Td>
-                    <Td>Price</Td>
-                </Tr>
-                <Tr>
-                    <Td>1</Td>
-                    <Td>Ink</Td>
-                    <Td>Litre</Td>
-                    <Td>Liquid</Td>
-                    <Td>2</Td>
-                    <Td>Price</Td>
-                </Tr>
-            </Tbody>
+            { order?.map((item)=>{
+                        
+                        return (<Tbody key={item.id}>
+                        <Tr>
+                            <Td>{item.id}</Td>
+                            <Td>{item.order_name}</Td>
+                            <Td>{item.order_date}</Td>
+                            <Td>{item.state}</Td>
+                            <Td>{item.ordered_by}</Td>
+                        </Tr> 
+                        </Tbody>)
+                    })|| <Tbody><Tr><Td colSpan="6">Nothing to show here</Td></Tr></Tbody> }
         </Table>
     </Box>
     <Box w='full' display='flex' justifyContent='space-evenly' flexWrap='wrap'>
