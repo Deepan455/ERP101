@@ -1,23 +1,69 @@
-import React from "react";
-import {VStack, Box, Heading,Text, Center, Progress, useColorModeValue } from "@chakra-ui/react";
+import React, {useState, useEffect} from "react";
+import {
+    VStack, Box, Flex,Text,Heading, Center, Progress, useColorModeValue,
+    Table, Tr, Th, Td, Image
+ } from "@chakra-ui/react";
 import { FiSend } from "react-icons/fi";
 import TopBar from "./common/TopBar";
+import MaterialForm from "./forms/MaterialForm";
+import ProductForm from "./forms/ProductForm";
+import axios from "axios";
+import { Link } from "react-router-dom";
 
 function Employee(){
+
+    const [employees,setEmployees] = useState(null);
+
+    useEffect(()=>{
+        async function getEmployees(){
+            const res = await axios.get('http://127.0.0.1:8000/api/employee/');
+            if(res.status == 200)
+            {
+                setEmployees(res.data);
+                console.log(res.data)
+            }
+            else
+            {
+                console.log('Fetch Error');
+            }
+        }
+        getEmployees()
+            .catch(e=>{
+                console.log(e);
+            });
+    },[]);
+
+
     const bgColor = useColorModeValue("gray.200","whiteAlpha.50");
+    const plateColor = useColorModeValue("white","black");
     return (
         <VStack
     w="87%"
-    bg={bgColor} 
+    minHeight="100vh"
+    bg={bgColor}
     spacing='0'>
-      <TopBar/>
-      <Box>
-            <Box w='36' h='32' bg={bgColor} px='5' py='2' border='1px solid black'>
-                <Text fontSize='m' display='flex' justifyContent='space-between'>Daily Sales<FiSend size='20'/></Text> 
-                <Center w='full' fontSize='xl' bg='green.300' height='14' my='2'>$500</Center>
-                <Progress value='80'/>
-            </Box>
+        <TopBar/>
+        <Box display='flex' width="full" justifyContent='space-evenly' flexWrap='wrap' h={60} border='1px solid black'>
+            {employees?.map((emp)=>{
+                return<Box key={emp.id} w='fit-content'>
+                    <Link href={emp?.image||"https://www.w3schools.com/howto/img_avatar.png"}>
+                        <Image boxSize={36} objectFit='scale-down' src={emp?.image||"https://www.w3schools.com/howto/img_avatar.png"} alt="Person"/>
+                    </Link>
+                    <Text>{emp.full_name}</Text>
+                    <Text>{emp.email}</Text>
+                    <Text>{emp.additional_info}</Text>
+                    <Text>{emp.joined}</Text>
+                    <Text>{emp.salary_amount}</Text>
+                </Box>
+            })
+            }
         </Box>
+
+        <Box w='full' p='15'>
+            <MaterialForm/>
+        </Box>
+        <ProductForm/>
+
   </VStack>
         
     );

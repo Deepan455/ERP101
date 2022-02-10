@@ -12,6 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { FiSend, FiSearch } from "react-icons/fi";
 import TopBar from "./common/TopBar";
+import { Link as RouteLink } from "react-router-dom";
 
 function Order(){
     const bgColor = useColorModeValue("gray.200","whiteAlpha.50");
@@ -66,7 +67,7 @@ function Order(){
                         return (<Tbody key={item.id}>
                         <Tr>
                             <Td>{item.id}</Td>
-                            <Td>{item.order_name}</Td>
+                            <Td><RouteLink to = {`/app/order/${item.id}`}>{item.order_name}</RouteLink></Td>
                             <Td>{item.order_date}</Td>
                             <Td>{item.state}</Td>
                             <Td>{item.ordered_by}</Td>

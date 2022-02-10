@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Box, Center, Table, Tr, Th, Td, Heading, Tbody, Thead } from "@chakra-ui/react";
 import axios from "axios";
+import { Link as RouteLink } from 'react-router-dom';
 
 function ProductList(){
     const [product,setProduct] = useState(null);
@@ -38,7 +39,7 @@ function ProductList(){
                             return (<Tbody key={item.id}>
                                 <Tr>
                                     <Td>{item.id}</Td>
-                                    <Td>{item.product_name}</Td>
+                                    <Td><RouteLink to = {`/app/product/${item.id}`}>{item.product_name}</RouteLink></Td>
                                     <Td>{item.inventory}</Td>
                                     <Td>{item.unit}</Td>
                                 </Tr>
