@@ -141,3 +141,17 @@ class TransactionViewSet(viewsets.ModelViewSet):
     serializer_class = TransactionSerializer
     permission_classes = [permissions.AllowAny]
 
+class ItemCatViewSet(viewsets.ModelViewSet):
+    queryset = ItemCat.objects.all()
+    serializer_class = ItemCatSerializer
+    permission_classes = [permissions.AllowAny]
+
+class ClientViewSet(viewsets.ModelViewSet):
+    queryset = Client.objects.all()
+    serializer_class = ClientSerializer
+    permission_classes = [permissions.AllowAny]
+
+class SellerViewset(viewsets.ModelViewSet):
+    queryset = Seller.objects.all()
+    serializer_class = SellerSerializer
+    permission_classes = [permissions.AllowAny]

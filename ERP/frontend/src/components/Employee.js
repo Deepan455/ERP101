@@ -1,14 +1,12 @@
 import React, {useState, useEffect} from "react";
 import {
     VStack, Box, Flex,Text,Heading, Center, Progress, useColorModeValue,
-    Table, Tr, Th, Td, Image
+    Table, Tr, Th, Td, Image, Avatar, Circle, Button
  } from "@chakra-ui/react";
-import { FiSend } from "react-icons/fi";
+import { FiSend, FiPlus } from "react-icons/fi";
 import TopBar from "./common/TopBar";
-import MaterialForm from "./forms/MaterialForm";
-import ProductForm from "./forms/ProductForm";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import EmployeeForm from "./forms/EmployeeForm";
 
 function Employee(){
 
@@ -43,26 +41,30 @@ function Employee(){
     bg={bgColor}
     spacing='0'>
         <TopBar/>
-        <Box display='flex' width="full" justifyContent='space-evenly' flexWrap='wrap' h={60} border='1px solid black'>
+        <Box display='flex' width="full" justifyContent='flex-start' flexWrap='wrap' border='1px solid black'>
             {employees?.map((emp)=>{
-                return<Box key={emp.id} w='fit-content'>
-                    <Link href={emp?.image||"https://www.w3schools.com/howto/img_avatar.png"}>
-                        <Image boxSize={36} objectFit='scale-down' src={emp?.image||"https://www.w3schools.com/howto/img_avatar.png"} alt="Person"/>
-                    </Link>
-                    <Text>{emp.full_name}</Text>
-                    <Text>{emp.email}</Text>
-                    <Text>{emp.additional_info}</Text>
-                    <Text>{emp.joined}</Text>
-                    <Text>{emp.salary_amount}</Text>
-                </Box>
+                console.log("Hello");
+                console.log(emp);
+                return(
+                    <Box key={emp?.id} w='fit-content' border='1px solid black' bg={plateColor} m={6} p={3} display="flex" flexDirection='column' justify-content='center' textAlign='center'>
+                    <a href={emp?.image||"https://www.w3schools.com/howto/img_avatar.png"} w='fit-content'>
+                        <Avatar boxSize={36} objectFit='scale-down' src={emp?.image||"https://www.w3schools.com/howto/img_avatar.png"} alt="Person"/>
+                    </a>
+                    <Text fontSize='xl'>{emp?.full_name}</Text>
+                    <Text fontSize="md">{emp?.additional_info}</Text>
+                    <Text fontSize="xs">{emp?.email}</Text>
+                    <Text fontSize="sm">Joined: {emp?.joined}</Text>
+                </Box>)
             })
             }
+            <Center w='170px' h='270px' border='1px solid black' bg={plateColor} m={6} p={3} display="flex" flexDirection='column' justify-content='center' textAlign='center'>
+                <Circle w='fit-content' border='1px solid black'><FiPlus size='60'/></Circle>
+            </Center>
         </Box>
 
         <Box w='full' p='15'>
-            <MaterialForm/>
+            <EmployeeForm/>
         </Box>
-        <ProductForm/>
 
   </VStack>
         
