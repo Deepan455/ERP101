@@ -12,26 +12,30 @@ import AMaterial from "./individuals/AMaterial";
 import AnOrder from "./individuals/AnOrder";
 import Error from "./common/error";
 import AProduct from "./individuals/AProduct";
+import store from "../redux/store";
+import { Provider } from "react-redux";
 
 function App(){
     return(
         <ChakraProvider theme={theme}>
-            <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-            <Routes>
-                <Route path="/app" element={<Dashboard/>}>
-                    <Route path="/app" element={<Content/>}/>
-                    <Route path="/app/inventory" element={<Inventory/>}/>
-                    <Route path="/app/order" element={<Order/>}/>
-                    <Route path="/app/employee" element={<Employee/>}/>
-                    <Route path="/app/material/*" element={<AMaterial/>}/>
-                    <Route path="/app/order/*" element={<AnOrder/>}/>
-                    <Route path="/app/product/*" element={<AProduct/>}/>
-                </Route>
-                <Route path="/Materialone" element={<AMaterial/>}/>
-                <Route path="*" element={<Dashboard/>}>
-                    <Route path="*" element = {<Error/>}/>
-                </Route>
-            </Routes>
+            <Provider store = {store}>
+                <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+                <Routes>
+                    <Route path="/app" element={<Dashboard/>}>
+                        <Route path="/app" element={<Content/>}/>
+                        <Route path="/app/inventory" element={<Inventory/>}/>
+                        <Route path="/app/order" element={<Order/>}/>
+                        <Route path="/app/employee" element={<Employee/>}/>
+                        <Route path="/app/material/*" element={<AMaterial/>}/>
+                        <Route path="/app/order/*" element={<AnOrder/>}/>
+                        <Route path="/app/product/*" element={<AProduct/>}/>
+                    </Route>
+                    <Route path="/Materialone" element={<AMaterial/>}/>
+                    <Route path="*" element={<Dashboard/>}>
+                        <Route path="*" element = {<Error/>}/>
+                    </Route>
+                </Routes>
+            </Provider>
         </ChakraProvider>
     );
 }

@@ -16,10 +16,12 @@ import {
     Heading,
     Image 
  } from "@chakra-ui/react";
+import { addItemCat, loadItemCat } from "../../redux/actions/materials/ItemCatAction";
+import { connect } from "react-redux";
 
-function MaterialForm(){
+function MaterialForm(props){
 
-    
+    console.log("testing redux store",props.itemCat);
     const [uploadFile,setUploadFile] = useState(null);
     const [matInput,setMatInput] = useState(null);
     const [image,setImage] = useState(null);
@@ -146,9 +148,29 @@ function MaterialForm(){
                     <FormErrorMessage>Please enter the name of the person selling</FormErrorMessage>
                 </FormControl>
                 <Center><Button type='submit'>Submit</Button></Center>
+                <Button type="button" onClick = {()=>{
+                    props.addItem()
+                }}>AddItem</Button>
+                <Button type="button" onClick = {()=>{
+                    props.loadItem()
+                }}>LoadItem</Button>
             </form>
         </Box>  
     );
 }
 
-export default MaterialForm;
+
+const mapStateToProps = state => {
+    return {
+        itemCat: state.ItemCatReducer
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        addItem: ()=> dispatch(addItemCat()),
+        loadItem: ()=> dispatch(loadItemCat())
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MaterialForm);
