@@ -149,10 +149,10 @@ function MaterialForm(props){
                 </FormControl>
                 <Center><Button type='submit'>Submit</Button></Center>
                 <Button type="button" onClick = {()=>{
-                    props.addItem()
+                    props.addItem();
                 }}>AddItem</Button>
                 <Button type="button" onClick = {()=>{
-                    props.loadItem()
+                    props.loadItem();
                 }}>LoadItem</Button>
             </form>
         </Box>  
@@ -169,7 +169,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         addItem: ()=> dispatch(addItemCat()),
-        loadItem: ()=> dispatch(loadItemCat())
+        loadItem: ()=> dispatch(loadItemCat)
     }
 }
 
