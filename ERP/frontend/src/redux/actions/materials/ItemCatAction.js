@@ -1,30 +1,30 @@
-import { ADD_ITEM_CAT, LOAD_ITEM_CAT } from "../../types/materialTypes";
+import { ADD_ITEM_CAT, LOAD_ITEM_CAT } from "../../types";
 import axios from "axios";
-export const loadItemCat = async()=>{
-    const res = await axios.get('http://127.0.0.1:8000/api/itemcat/');
-    console.log(res.data);
-    const val = res.data;
-
-    if(res.status == 200)
-    {
-        return {
-            type: LOAD_ITEM_CAT,
-            data: val
-        }
-    }
-
-    else
-    {
-        return {
-            type: LOAD_ITEM_CAT,
-            data: ["one","two"]
-        }
-    }
+export const loadItemCat  =()=>{
+    return (dispatch)=>{
+        axios.get('http://127.0.0.1:8000/api/itemcat/')
+        .then(response=>{
+            const val = response.data;
+            console.log("From success");
+            dispatch(setLoadedItemCat(response.data));
+        })
+        .catch(error=>{
+            console.log("From failure");
+            dispatch(setLoadedItemCat(["one","two"]));
+        })
+    };
 }
 
-export const addItemCat = ()=>{
+export const setLoadedItemCat = (data)=>{
     return {
-        type: ADD_ITEM_CAT,
-        data: "onemore"
+        type: LOAD_ITEM_CAT,
+        data: data
     }
 }
+
+// export const addItemCat = ()=>{
+//     return {
+//         type: ADD_ITEM_CAT,
+//         data: "onemore"
+//     }
+// }

@@ -18,6 +18,7 @@ import {
  } from "@chakra-ui/react";
 import { addItemCat, loadItemCat } from "../../redux/actions/materials/ItemCatAction";
 import { connect } from "react-redux";
+import { loadSeller } from "../../redux/actions/materials/SellerAction";
 
 function MaterialForm(props){
 
@@ -38,7 +39,9 @@ function MaterialForm(props){
                 category:1,
                 seller:1
             }
-        )
+        );
+        props.loadItem();
+        props.loadSeller();
     },[]);
 
     const updateField=({name,value})=>{
@@ -50,7 +53,6 @@ function MaterialForm(props){
 
     const submitForm = async (e)=>{
         e.preventDefault();
-        console.log(matInput);
 
         const formdata = new FormData();
 
@@ -120,7 +122,7 @@ function MaterialForm(props){
                     <FormControl>
                         <FormLabel>Image</FormLabel>
                         {uploadFile&&(<Image boxSize={36} id='image_upload' name='image_upload' m={10} src={uploadFile} objectFit='scale-down' alt="Person"/>)}
-                        <Input onChange={(({target})=>updateField(target))} id='image' name='images' type='file' onChange={({target})=>loadFile(target)}/>
+                        <Input id='image' name='images' type='file' onChange={({target})=>loadFile(target)}/>
                         <FormErrorMessage>Upload the image</FormErrorMessage>
                     </FormControl>
                 <FormControl>
@@ -139,21 +141,35 @@ function MaterialForm(props){
                 </FormControl>
                 <FormControl>
                     <FormLabel>Category</FormLabel>
-                    <Input onChange={(({target})=>updateField(target))} id='category' type='text' name='category'/>
+                    <Select onChange={(({target})=>updateField(target))} id='category' type='text' name='category'>
+                        {props.itemCat && props?.itemCat?.map((item)=>{
+                            console.log(item);
+                            return <option key={item.id} value={item.id}>{item.category_name || item}</option>
+                        })}
+                    </Select>
                     <FormErrorMessage>Category for the item</FormErrorMessage>
                 </FormControl>
                 <FormControl>
                     <FormLabel>Seller</FormLabel>
-                    <Input onChange={(({target})=>updateField(target))} id='orderName' type='text' name='seller'/>
+                    <Select onChange={(({target})=>updateField(target))} id='orderName' type='text' name='seller'>
+                        {props.sellerList?.map((item)=>{
+                            console.log(item);
+                            return <option key={item.id} value={item.id}>{item?.full_name || item}:{item.company}</option>
+                        })}
+                    </Select>
                     <FormErrorMessage>Please enter the name of the person selling</FormErrorMessage>
                 </FormControl>
                 <Center><Button type='submit'>Submit</Button></Center>
-                <Button type="button" onClick = {()=>{
+
+
+                {/* <Button type="button" onClick = {()=>{
                     props.addItem();
                 }}>AddItem</Button>
                 <Button type="button" onClick = {()=>{
                     props.loadItem();
-                }}>LoadItem</Button>
+                }}>LoadItem</Button> */}
+
+
             </form>
         </Box>  
     );
@@ -162,14 +178,15 @@ function MaterialForm(props){
 
 const mapStateToProps = state => {
     return {
-        itemCat: state.ItemCatReducer
+        itemCat: state.ItemCatReducer,
+        sellerList: state.SellerReducer
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        addItem: ()=> dispatch(addItemCat()),
-        loadItem: ()=> dispatch(loadItemCat)
+        loadItem: ()=> dispatch(loadItemCat()),
+        loadSeller: ()=> dispatch(loadSeller())
     }
 }
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState, useEffect, useReducer} from "react";
 import { 
     Box,
     FormControl,
@@ -9,88 +9,111 @@ import {
     Button,
     Center,
     useColorModeValue,
-    Heading
+    Heading,
+    Image
  } from "@chakra-ui/react";
+ import { FiX } from "react-icons/fi";
 
 function ProductForm(){
 
+    const materialReducer = (state,action)=>{
+        // console.log("reduced");
+        let updated = new Set(state);
+        switch(action.type)
+        {
+            case "add":
+                
+                action.data.forEach((one)=>{
+                    updated.add(one);
+                }
+                );
+                return Array.from(updated);
+            
+            case "remove":
+                action.data.forEach((one)=>{
+                    updated.delete(one);
+                }
+                );
+                return Array.from(updated);
+        }
+    }
 
     
-    // const [uploadFile,setUploadFile] = useState(null);
-    // const [matInput,setMatInput] = useState(null);
-    // const [image,setImage] = useState(null);
+    const [uploadFile,setUploadFile] = useState(null);
+    const [prodInput,setProdInput] = useState(null);
+    const [materials,setMaterials] = useReducer(materialReducer,[]);
+    // const [materials,setMaterials] = useState();
+    const [image,setImage] = useState(null);
     
     
-    // useEffect(()=>{
-    //     setMatInput(
-    //         {
-    //             item_name:'',
-    //             quantity:'',
-    //             unit:'',
-    //             asssetornot:'',
-    //             additional_info:'',
-    //             priceperunit:'',
-    //             category:1,
-    //             seller:1
-    //         }
-    //     )
-    // },[]);
+    useEffect(()=>{
+        setProdInput(
+            {
+                item_name:'',
+                product_name: '',
+                inventory: 0,
+                unit: '',
+                desc: '',
+                isVariation: false,
+            }
+        )
+    },[]);
 
-    // const updateField=({name,value})=>{
-    //     setMatInput({
-    //         ...matInput,
-    //         [name]:value
-    //     });
-    // };
+    const updateField=({name,value})=>{
+        setProdInput({
+            ...prodInput,
+            [name]:value
+        });
+    };
 
-    // const submitForm = async (e)=>{
-    //     e.preventDefault();
-    //     console.log(matInput);
+    const submitForm = async (e)=>{
+        e.preventDefault();
+        console.log(prodInput);
 
-    //     const formdata = new FormData();
+        const formdata = new FormData();
 
-    //     for(const property in matInput)
-    //     {
-    //         // console.log(`${property}:${matInput[property]}`);
-    //         formdata.append(property,matInput[property]);
-    //     }
+        for(const property in prodInput)
+        {
+            // console.log(`${property}:${prodInput[property]}`);
+            formdata.append(property,prodInput[property]);
+        }
 
-    //     if(image)
-    //     {
-    //         formdata.append('image',image,image.name);
-    //     }
+        if(image)
+        {
+            formdata.append('image',image,image.name);
+        }
         
-    //     const res = await axios.post('http://127.0.0.1:8000/api/item/',formdata,{
-    //         headers: {
-    //          'Content-Type': 'multipart/form-data' // do not forget this 
-    //         }});
-    //     if(res.status == 200 || res.status ==201)
-    //     {
-    //         console.log(res.data)
-    //     }
-    //     else
-    //     {
-    //         console.log(res);
-    //     }
-    // }
+        const res = await axios.post('http://127.0.0.1:8000/api/item/',formdata,{
+            headers: {
+             'Content-Type': 'multipart/form-data' // do not forget this 
+            }});
+        if(res.status == 200 || res.status ==201)
+        {
+            console.log(res.data)
+        }
+        else
+        {
+            console.log(res);
+        }
+    }
 
-    // const loadFile = (e)=>{
-    //     console.log("Uploaded");
-    //     console.log(e);
-    //     console.log(e.files[0]);
+    const loadFile = (e)=>{
+        console.log("Uploaded");
+        console.log(e); 
+        console.log(e.files[0]);
         
-    //     setMatInput({
-    //         ...matInput,
-    //         image:e.files[0]
-    //     });
+        setProdInput({
+            ...prodInput,
+            image:e.files[0]
+        });
 
-    //     //To set the image to send to the server
-    //     setImage(e.files[0]);
+        //To set the image to send to the server
+        setImage(e.files[0]);
 
-    //     //To display the uploaded image
-    //     setUploadFile(URL.createObjectURL(e.files[0]));
-    //     console.log(URL.createObjectURL(e.files[0]));
-    // }
+        //To display the uploaded image
+        setUploadFile(URL.createObjectURL(e.files[0]));
+        console.log(URL.createObjectURL(e.files[0]));
+    }
 
 
 
@@ -101,42 +124,48 @@ function ProductForm(){
             <Box bg={plateColor} w='50%' p='5'>
                 
                 <FormControl>
-                    <FormLabel>Order Name</FormLabel>
-                    <Input id='orderName' type='text'/>
-                    <FormErrorMessage>Please enter the name of the order</FormErrorMessage>
+                    <FormLabel>Product Name</FormLabel>
+                    <Input onChange={(({target})=>updateField(target))} id='productName' name='productName' type='text'/>
+                    <FormErrorMessage>Please enter the name of the product</FormErrorMessage>
                 </FormControl>
+
+                <FormControl>
+                    <FormLabel>Inventory</FormLabel>
+                    <Input onChange={(({target})=>updateField(target))} id='productName' name='productName' type='text'/>
+                    <FormErrorMessage>Please enter the name of the product</FormErrorMessage>
+                </FormControl>
+
+                <FormControl>
+                    <FormLabel>Unit</FormLabel>
+                    <Input onChange={(({target})=>updateField(target))} id='productName' name='productName' type='text'/>
+                    <FormErrorMessage>Please enter the name of the product</FormErrorMessage>
+                </FormControl>
+
+                <FormControl>
+                    <FormLabel>Image</FormLabel>
+                    {uploadFile&&(<Image boxSize={36} id='image_upload' name='image_upload' src={uploadFile} objectFit='scale-down' alt="Person"/>)}
+                    <Input id='images' name='images' type='file' onChange={({target})=>loadFile(target)}/>
+                    <FormErrorMessage>Upload the image</FormErrorMessage>
+                </FormControl>
+
                 <FormControl>
                     <FormLabel>Description</FormLabel>
-                    <Input id='orderName' type='text'/>
-                    <FormErrorMessage>Any additional info and description of the product goes here</FormErrorMessage>
+                    <Input onChange={(({target})=>updateField(target))} id='productName' name='productName' type='text'/>
+                    <FormErrorMessage>Please enter the name of the product</FormErrorMessage>
                 </FormControl>
-                <FormControl>
-                    <FormLabel>Order Date</FormLabel>
-                    <Input id='orderName' type='date'/>
-                    <FormErrorMessage>Please enter the date of the order</FormErrorMessage>
-                </FormControl>
-                <FormControl>
-                    <FormLabel>Status</FormLabel>
-                    <Select placeholder='Select an option'>
-                        <option value='recieved'>Recieved</option>
-                        <option value='inProgress'>In Progress</option>
-                        <option value='completed'>Completed</option>
-                        <option value='Shipped'>Shipped</option>
-                        <option value='canceled'>Canceled</option>
-                    </Select>
-                </FormControl>
-                <FormControl>
-                    <FormLabel>Ordered By</FormLabel>
-                    <Input id='orderName' type='text'/>
-                    <FormErrorMessage>Please enter the name of the person ordering</FormErrorMessage>
-                </FormControl>
+
             </Box>
 
             <Box bg={plateColor} w='30%' p='5' overflow='scroll'>
-                <Heading size='md'>Products</Heading>
+                <Heading size='md'>Materials</Heading>
+                <Box>
+                    {materials?.map((mat)=>{
+                        return <Box border='1px solid black' display='flex' justifyContent="space-between" p="2" marginY="2">{mat}<Button size="xs" onClick = {(({target})=>setMaterials({type:"remove",data:[mat]}))}><FiX size={12}/></Button></Box>
+                    })}
+                </Box>
                 <FormControl>
-                    <FormLabel>Status</FormLabel>
-                    <Select placeholder='Select an option'>
+                    <FormLabel>Choose the materials</FormLabel>
+                    <Select onChange = {(({target})=>setMaterials({type:"add",data:[target.value]}))} placeholder='Select an option' height='auto'>
                         <option value='recieved'>Product 1</option>
                         <option value='inProgress'>Product 2</option>
                         <option value='completed'>Product 3</option>
