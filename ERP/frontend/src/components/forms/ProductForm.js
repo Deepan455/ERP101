@@ -13,12 +13,14 @@ import {
     Image
  } from "@chakra-ui/react";
  import { FiX } from "react-icons/fi";
+ import axios from 'axios';
 
 function ProductForm(){
 
     const materialReducer = (state,action)=>{
         // console.log("reduced");
         let updated = new Set(state);
+        console.log("action data",action.data);
         switch(action.type)
         {
             case "add":
@@ -35,18 +37,38 @@ function ProductForm(){
                 }
                 );
                 return Array.from(updated);
+            
+            case "":
+            
+            default:
+                return state;
         }
     }
 
+    // const sendMaterialReducer = (state,action)=>
+    // {
+    //     switch(action.type)
+    //     {
+    //         case "addQuantity":
+    //             return {
+    //                 ...state,
+    //                 "quantity":action.quantity
+    //             }
+
+    //         default:
+    //             return action.data
+
+    //     }
+    // }
     
     const [uploadFile,setUploadFile] = useState(null);
     const [prodInput,setProdInput] = useState(null);
     const [materials,setMaterials] = useReducer(materialReducer,[]);
+    const [materialOption,setMaterialOption] = useState();
     // const [materials,setMaterials] = useState();
-    const [image,setImage] = useState(null);
+    const [image,setImage] = useState(null);    
     
-    
-    useEffect(()=>{
+    useEffect(async ()=>{
         setProdInput(
             {
                 item_name:'',
@@ -56,7 +78,18 @@ function ProductForm(){
                 desc: '',
                 isVariation: false,
             }
-        )
+        );
+        
+        const materialOptionResponse = await axios.get('http://127.0.0.1:8000/api/item/');
+        if(materialOptionResponse.status == 200)
+        {
+            console.log("material Response",materialOptionResponse.data);
+            setMaterialOption(materialOptionResponse.data);
+        }
+        else
+        {
+            alert("some error in material option fetch");
+        }
     },[]);
 
     const updateField=({name,value})=>{
@@ -83,7 +116,7 @@ function ProductForm(){
             formdata.append('image',image,image.name);
         }
         
-        const res = await axios.post('http://127.0.0.1:8000/api/item/',formdata,{
+        const res = await axios.post('http://127.0.0.1:8000/api/product/',formdata,{
             headers: {
              'Content-Type': 'multipart/form-data' // do not forget this 
             }});
@@ -156,21 +189,28 @@ function ProductForm(){
 
             </Box>
 
-            <Box bg={plateColor} w='30%' p='5' overflow='scroll'>
+            <Box bg={plateColor} w='40%' p='5' overflow='scroll'>
                 <Heading size='md'>Materials</Heading>
-                <Box>
+                <Box maxHeight="64" overflow='scroll'>
                     {materials?.map((mat)=>{
-                        return <Box border='1px solid black' display='flex' justifyContent="space-between" p="2" marginY="2">{mat}<Button size="xs" onClick = {(({target})=>setMaterials({type:"remove",data:[mat]}))}><FiX size={12}/></Button></Box>
+                        return <Box border='1px solid black' key={JSON.parse(mat).id} p="1" marginY="2">
+                                <Box display='flex' justifyContent="space-between" p="2" marginY="1">
+                                    {JSON.parse(mat).item_name}
+                                    <Button size="xs" onClick = {(({target})=>setMaterials({type:"remove",data:[mat]}))}><FiX size={12}/></Button>
+                                </Box>
+                                <Box>
+                                    <Input size="xs" w="70%" marginX="2"></Input>{JSON.parse(mat).unit}
+                                </Box>
+                            </Box>
                     })}
                 </Box>
                 <FormControl>
                     <FormLabel>Choose the materials</FormLabel>
                     <Select onChange = {(({target})=>setMaterials({type:"add",data:[target.value]}))} placeholder='Select an option' height='auto'>
-                        <option value='recieved'>Product 1</option>
-                        <option value='inProgress'>Product 2</option>
-                        <option value='completed'>Product 3</option>
-                        <option value='inProgress'>Product 4</option>
-                        <option value='completed'>Product 5</option>
+                        {materialOption?.map((opt)=>{
+                            return <option value={JSON.stringify(opt)} key={opt.id}>{opt.item_name}</option>
+                            }
+                        )}
                     </Select>
                 </FormControl>
             </Box>
