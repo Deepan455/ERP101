@@ -134,21 +134,21 @@ function ProductForm(){
         //     console.log(value);
         // }
 
-        for(var pair of mainData.entries()) {
-            console.log(pair[0]+ ', '+ pair[1]);
-         }
-        // const res = await axios.post('http://127.0.0.1:8000/api/product/',formdata,{
-        //     headers: {
-        //      'Content-Type': 'multipart/form-data' // do not forget this 
-        //     }});
-        // if(res.status == 200 || res.status ==201)
-        // {
-        //     console.log(res.data)
-        // }
-        // else
-        // {
-        //     console.log(res);
-        // }
+        // for(var pair of mainData.entries()) {
+        //     console.log(pair[0]+ ', '+ pair[1]);
+        //  }
+        const res = await axios.post('http://127.0.0.1:8000/api/product/',mainData,{
+            headers: {
+             'Content-Type': 'multipart/form-data' // do not forget this 
+            }});
+        if(res.status == 200 || res.status ==201)
+        {
+            console.log(res.data)
+        }
+        else
+        {
+            console.log(res);
+        }
     }
 
     const loadFile = (e)=>{
