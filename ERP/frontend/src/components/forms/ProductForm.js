@@ -18,48 +18,49 @@ import {
 function ProductForm(){
 
     const materialReducer = (state,action)=>{
-        // console.log("reduced");
-        let updated = new Set(state);
-        console.log("action data",action.data);
+        console.log("reduced",state);
+        let updated = state;
         switch(action.type)
         {
             case "add":
-                
-                action.data.forEach((one)=>{
-                    updated.add(one);
-                }
-                );
+                let incdata = JSON.parse(action.data);
+                let count=0;
+                updated.map((dat)=>{
+                    if(dat.id === incdata.id)
+                    {
+                        count++;
+                    }
+                })
+                if(count==0)updated.push(incdata);
                 return Array.from(updated);
             
             case "remove":
-                action.data.forEach((one)=>{
-                    updated.delete(one);
-                }
-                );
+                console.log("actionindex",action.index);
+                updated.splice(action.index,1);
+                console.log("removed",updated);
                 return Array.from(updated);
             
-            case "":
+            case "addQuantity":
+                let indata = JSON.parse(action.data);
+                updated.forEach((dat)=>{
+                    if(dat.id === indata.id)
+                    {
+                        dat.selectQuantity = action.quantity;
+                        console.log(dat);
+                        return dat;
+                        // count++;
+                    }
+                    else{
+                        return dat;
+                    }
+                })
+
             
             default:
                 return state;
         }
+        // return state+"hello";
     }
-
-    // const sendMaterialReducer = (state,action)=>
-    // {
-    //     switch(action.type)
-    //     {
-    //         case "addQuantity":
-    //             return {
-    //                 ...state,
-    //                 "quantity":action.quantity
-    //             }
-
-    //         default:
-    //             return action.data
-
-    //     }
-    // }
     
     const [uploadFile,setUploadFile] = useState(null);
     const [prodInput,setProdInput] = useState(null);
@@ -71,8 +72,7 @@ function ProductForm(){
     useEffect(async ()=>{
         setProdInput(
             {
-                item_name:'',
-                product_name: '',
+                product_name:'',
                 inventory: 0,
                 unit: '',
                 desc: '',
@@ -93,6 +93,9 @@ function ProductForm(){
     },[]);
 
     const updateField=({name,value})=>{
+        console.log("Updated");
+        console.log("name",name);
+        console.log("value",value);
         setProdInput({
             ...prodInput,
             [name]:value
@@ -113,21 +116,39 @@ function ProductForm(){
 
         if(image)
         {
-            formdata.append('image',image,image.name);
+            formdata.append('images',image,image.name);
         }
-        
-        const res = await axios.post('http://127.0.0.1:8000/api/product/',formdata,{
-            headers: {
-             'Content-Type': 'multipart/form-data' // do not forget this 
-            }});
-        if(res.status == 200 || res.status ==201)
+
+        const mainData = new FormData();
+        mainData.append('product',formdata);
+        mainData.append('items',materials.map((mat)=>
         {
-            console.log(res.data)
-        }
-        else
-        {
-            console.log(res);
-        }
+
+            return {
+                quantity:mat.selectQuantity,
+                item:mat.id
+            }
+        }))
+
+        // for (var value of formdata.values()) {
+        //     console.log(value);
+        // }
+
+        for(var pair of mainData.entries()) {
+            console.log(pair[0]+ ', '+ pair[1]);
+         }
+        // const res = await axios.post('http://127.0.0.1:8000/api/product/',formdata,{
+        //     headers: {
+        //      'Content-Type': 'multipart/form-data' // do not forget this 
+        //     }});
+        // if(res.status == 200 || res.status ==201)
+        // {
+        //     console.log(res.data)
+        // }
+        // else
+        // {
+        //     console.log(res);
+        // }
     }
 
     const loadFile = (e)=>{
@@ -149,7 +170,6 @@ function ProductForm(){
     }
 
 
-
     const plateColor = useColorModeValue("white","black");
     return(
         <Box w='full' display='flex' justifyContent='space-evenly' flexWrap='wrap'>
@@ -158,19 +178,19 @@ function ProductForm(){
                 
                 <FormControl>
                     <FormLabel>Product Name</FormLabel>
-                    <Input onChange={(({target})=>updateField(target))} id='productName' name='productName' type='text'/>
+                    <Input onChange={(({target})=>updateField(target))} id='productName' name='product_name' type='text'/>
                     <FormErrorMessage>Please enter the name of the product</FormErrorMessage>
                 </FormControl>
 
                 <FormControl>
                     <FormLabel>Inventory</FormLabel>
-                    <Input onChange={(({target})=>updateField(target))} id='productName' name='productName' type='text'/>
+                    <Input onChange={(({target})=>updateField(target))} id='inventory' name='inventory' type='text'/>
                     <FormErrorMessage>Please enter the name of the product</FormErrorMessage>
                 </FormControl>
 
                 <FormControl>
                     <FormLabel>Unit</FormLabel>
-                    <Input onChange={(({target})=>updateField(target))} id='productName' name='productName' type='text'/>
+                    <Input onChange={(({target})=>updateField(target))} id='unit' name='unit' type='text'/>
                     <FormErrorMessage>Please enter the name of the product</FormErrorMessage>
                 </FormControl>
 
@@ -183,7 +203,7 @@ function ProductForm(){
 
                 <FormControl>
                     <FormLabel>Description</FormLabel>
-                    <Input onChange={(({target})=>updateField(target))} id='productName' name='productName' type='text'/>
+                    <Input onChange={(({target})=>updateField(target))} id='desc' name='desc' type='text'/>
                     <FormErrorMessage>Please enter the name of the product</FormErrorMessage>
                 </FormControl>
 
@@ -192,21 +212,21 @@ function ProductForm(){
             <Box bg={plateColor} w='40%' p='5' overflow='scroll'>
                 <Heading size='md'>Materials</Heading>
                 <Box maxHeight="64" overflow='scroll'>
-                    {materials?.map((mat)=>{
-                        return <Box border='1px solid black' key={JSON.parse(mat).id} p="1" marginY="2">
+                {materials?.map((mat,index)=>{
+                        return <Box border='1px solid black' key={mat.id} p="1" marginY="2">
                                 <Box display='flex' justifyContent="space-between" p="2" marginY="1">
-                                    {JSON.parse(mat).item_name}
-                                    <Button size="xs" onClick = {(({target})=>setMaterials({type:"remove",data:[mat]}))}><FiX size={12}/></Button>
+                                    {mat.item_name}
+                                    <Button size="xs" onClick = {(({target})=>setMaterials({type:"remove",data:mat,index:index}))}><FiX size={12}/></Button>
                                 </Box>
                                 <Box>
-                                    <Input size="xs" w="70%" marginX="2"></Input>{JSON.parse(mat).unit}
+                                    <Input type='number' size="xs" w="70%" marginX="2" required onChange = {(({target})=>setMaterials({type:"addQuantity",data:JSON.stringify(mat),quantity:target.value}))}></Input>{mat.unit}
                                 </Box>
                             </Box>
-                    })}
+                    })||"hello"}
                 </Box>
                 <FormControl>
                     <FormLabel>Choose the materials</FormLabel>
-                    <Select onChange = {(({target})=>setMaterials({type:"add",data:[target.value]}))} placeholder='Select an option' height='auto'>
+                    <Select onChange = {(({target})=>setMaterials({type:"add",data:target.value})  )} placeholder='Select an option' height='auto'>
                         {materialOption?.map((opt)=>{
                             return <option value={JSON.stringify(opt)} key={opt.id}>{opt.item_name}</option>
                             }
@@ -214,7 +234,7 @@ function ProductForm(){
                     </Select>
                 </FormControl>
             </Box>
-            <Box w='85%' p='5' bg={plateColor} m='10'><Center><Button>Submit</Button></Center></Box>
+            <Box w='85%' p='5' bg={plateColor} m='10'><Center><Button onClick={submitForm}>Submit</Button></Center></Box>
         </Box>
     );
 }
